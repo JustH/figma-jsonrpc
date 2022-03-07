@@ -8,15 +8,18 @@ if (typeof figma !== "undefined") {
   sendRaw = message => figma.ui.postMessage(message);
 } else if (typeof parent !== "undefined") {
   onmessage = event => handleRaw(event.data.pluginMessage);
-  sendRaw = message => parent.postMessage({ pluginMessage: message }, "*");
+  sendRaw = (message, options) => parent.postMessage({ pluginMessage: message,  pluginId: options?.pluginId || '' }, 'https://www.figma.com');
 }
 
 let rpcIndex = 0;
 let pending = {};
 
-function sendJson(req) {
+function sendJson(req, options) {
   try {
-    sendRaw(req);
+    if (typeof parent !== "undefined"){
+      sendRaw(req, options);
+
+    }
   } catch (err) {
     console.error(err);
   }
@@ -126,7 +129,7 @@ module.exports.sendNotification = (method, params) => {
   sendJson({ jsonrpc: "2.0", method, params });
 };
 
-module.exports.sendRequest = (method, params, timeout) => {
+module.exports.sendRequest = (method, params, options) => {
   return new Promise((resolve, reject) => {
     const id = rpcIndex;
     const req = { jsonrpc: "2.0", method, params, id };
@@ -146,10 +149,10 @@ module.exports.sendRequest = (method, params, timeout) => {
     callback.timeout = setTimeout(() => {
       delete pending[id];
       reject(new Error("Request " + method + " timed out."));
-    }, timeout || 3000);
+    }, options?.timeout || 3000);
 
     pending[id] = callback;
-    sendJson(req);
+    sendJson(req, options);
   });
 };
 

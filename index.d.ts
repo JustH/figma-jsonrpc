@@ -1,12 +1,12 @@
 /**
  * Create a set of methods that will be executed on the UI,
- * regarless of where they are called from.
+ * regardless of where they are called from.
  */
 export function createUIAPI<
   T extends { [method: string]: (...args: any[]) => any | Promise<any> }
 >(
   methods: T,
-  options?: { timeout?: number }
+  options?: { timeout?: number, pluginId?: string}
 ): Readonly<
   {
     [K in keyof T]: (
@@ -25,7 +25,7 @@ export function createPluginAPI<
   T extends { [method: string]: (...args: any[]) => any | Promise<any> }
 >(
   methods: T,
-  options?: { timeout?: number }
+  options?: { timeout?: number, pluginId?: string }
 ): Readonly<
   {
     [K in keyof T]: (
