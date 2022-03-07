@@ -8,7 +8,7 @@ if (typeof figma !== "undefined") {
   sendRaw = message => figma.ui.postMessage(message);
 } else if (typeof parent !== "undefined") {
   onmessage = event => handleRaw(event.data.pluginMessage);
-  sendRaw = (message, options) => parent.postMessage({ pluginMessage: message,  pluginId: options?.pluginId || '' }, 'https://www.figma.com');
+  sendRaw = (message, options) => parent.postMessage({ pluginMessage: message,  pluginId: options && options.pluginId || '' }, 'https://www.figma.com');
 }
 
 let rpcIndex = 0;
@@ -149,7 +149,7 @@ module.exports.sendRequest = (method, params, options) => {
     callback.timeout = setTimeout(() => {
       delete pending[id];
       reject(new Error("Request " + method + " timed out."));
-    }, options?.timeout || 3000);
+    }, options && options.timeout || 3000);
 
     pending[id] = callback;
     sendJson(req, options);
