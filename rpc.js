@@ -18,7 +18,8 @@ function sendJson(req, options) {
   try {
     if (typeof parent !== "undefined"){
       sendRaw(req, options);
-
+    } else {
+      sendRaw(req)
     }
   } catch (err) {
     console.error(err);
